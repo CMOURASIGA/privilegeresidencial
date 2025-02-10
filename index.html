@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Moradores - Privilege Residencial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 450px;
+            margin: auto;
+            overflow: hidden;
+        }
+        input, select, button {
+            width: calc(100% - 20px);
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #6c9932;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        .instructions {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+            text-align: left;
+        }
+        .preview-container {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .preview-container img {
+            max-width: 100px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border: 2px solid #6c9932;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cadastro de Moradores</h2>
+        <form id="cadastroForm">
+            <input type="text" id="nome" placeholder="Nome Completo" required>
+            <select id="bloco" required>
+                <option value="">Selecione o Bloco</option>
+                <option value="1">Bloco 1</option>
+                <option value="2">Bloco 2</option>
+                <option value="3">Bloco 3</option>
+            </select>
+            <input type="text" id="apartamento" placeholder="Número do Apartamento" required>
+            <input type="email" id="email" placeholder="E-mail" required>
+            <div class="instructions">
+                <strong>Como anexar sua foto 3x4:</strong>
+                <ul>
+                    <li>Use um fundo branco ou claro.</li>
+                    <li>Olhe diretamente para a câmera.</li>
+                    <li>A foto deve ser bem iluminada e sem sombras.</li>
+                    <li>Formato aceito: JPEG ou PNG.</li>
+                </ul>
+            </div>
+            <input type="file" id="foto" accept="image/*" required>
+            <input type="hidden" id="fotoBase64"> <!-- Campo oculto para armazenar a imagem Base64 -->
+            <div class="preview-container">
+                <img id="fotoPreview" src="" alt="Pré-visualização da Foto" style="display:none;">
+            </div>
+            <button type="submit">Enviar Cadastro</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('foto').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgElement = document.getElementById('fotoPreview');
+                    imgElement.src = e.target.result;
+                    imgElement.style.display = 'block';
+                    document.getElementById('fotoBase64').value = e.target.result; // Salva a foto convertida
+                    console.log("Imagem convertida para Base64:", e.target.result.substring(0, 50) + "..."); // Log no console
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('cadastroForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            let formData = {
+                nome: document.getElementById("nome").value,
+                bloco: document.getElementById("bloco").value,
+                apartamento: document.getElementById("apartamento").value,
+                email: document.getElementById("email").value,
+                foto: document.getElementById("fotoBase64").value // Agora a foto é enviada!
+            };
+
+            console.log("Dados enviados ao Apps Script:", formData);
+
+            google.script.run.processarFormulario(formData);
+            alert("Cadastro enviado com sucesso!");
+        });
+    </script>
+</body>
+</html>
